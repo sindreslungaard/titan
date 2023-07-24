@@ -126,7 +126,7 @@ func (s *Socket) Close() {
 	atomic.StoreUint32(&s.closed, 1)
 
 	func() {
-		program.Recover()
+		defer program.Recover()
 		s.OnClose()
 	}()
 
