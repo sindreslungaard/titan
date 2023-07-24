@@ -18,5 +18,5 @@ func init() {
 func main() {
 	log.Fatal().Err(network.NewServer().OnConnect(func(s *network.Socket) {
 		println("message")
-	}).Listen(3000)).Msg("Server error")
+	}).Listen(2096)).Msg("Server error")
 }
