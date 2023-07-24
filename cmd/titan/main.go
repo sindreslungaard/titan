@@ -16,7 +16,7 @@ func init() {
 }
 
 func main() {
-	network.NewServer().OnConnect(func(s *network.Socket) {
+	log.Fatal().Err(network.NewServer().OnConnect(func(s *network.Socket) {
 		println("message")
-	}).Listen(3000)
+	}).Listen(3000)).Msg("Server error")
 }
