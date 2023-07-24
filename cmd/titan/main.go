@@ -2,6 +2,7 @@ package main
 
 import (
 	"os"
+	"titan/db"
 	"titan/network"
 
 	"github.com/rs/zerolog"
@@ -16,6 +17,17 @@ func init() {
 }
 
 func main() {
+	if err := db.Connect(
+		os.Getenv("db_user"),
+		os.Getenv("db_pass"),
+		os.Getenv("db_host"),
+		os.Getenv("db_name"),
+		os.Getenv("db_port"),
+		os.Getenv("db_automigrate") == "true",
+	); err != nil {
+		log.Fatal().Err(err).Msg("Database connection error")
+	}
+
 	log.Fatal().Err(network.NewServer().OnConnect(func(s *network.Socket) {
 		println("message")
 	}).Listen(2096)).Msg("Server error")
