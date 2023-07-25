@@ -45,5 +45,9 @@ func (r *Room) process() {
 }
 
 func (r *Room) tick() {
+	r.tickroomusers()
+}
+
+func (r *Room) tickroomusers() {
 
 }
