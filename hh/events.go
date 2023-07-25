@@ -25,6 +25,7 @@ func UnauthenticatedEventHandler(s Session) func(protocol.Buffer) {
 				return
 			}
 			s.OnReceive(user.EventHandler)
+			user.welcome()
 		default:
 			log.Debug().Int("header", header).Msg("Unknown pre-auth header")
 		}

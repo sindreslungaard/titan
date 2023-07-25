@@ -24,5 +24,4 @@ func securelogin(s Session, b protocol.Buffer) (*User, bool) {
 	u := newuser(s, data)
 
 	return u, true
-
 }
