@@ -82,3 +82,40 @@ func NewNavigatorCollapsedCategories() []byte {
 
 	return b.Flush()
 }
+
+func NewNavigatorSearchResults(view string, query string) []byte {
+	b := EmptyBuffer()
+	b.WriteShort(NewNavigatorSearchResultsHeader)
+
+	b.WriteString(view)
+	b.WriteString(query)
+
+	// todo: handle different views, all rooms vs my rooms etc
+
+	b.WriteInt(1) // num categories
+
+	b.WriteString("")
+	b.WriteString("All rooms")
+	b.WriteInt(0)
+	b.WriteBoolean(false)
+	b.WriteInt(0)
+
+	b.WriteInt(1) // foreach category, num rooms
+
+	b.WriteInt(1)                     // room id
+	b.WriteString("Test room")        // room name
+	b.WriteInt(1)                     // owner id
+	b.WriteString("Konquer")          // owner name
+	b.WriteInt(0)                     // 0=open | 1=locked | 2=pw | 3=invis
+	b.WriteInt(0)                     // users in room
+	b.WriteInt(20)                    // max users
+	b.WriteString("Test description") // room desc
+	b.WriteInt(0)
+	b.WriteInt(0) // upvotes?
+	b.WriteInt(0)
+	b.WriteInt(1) // category, prob referring to collapsed categories index
+	b.WriteInt(0) // num tags
+	b.WriteInt(0) // bitmask, base=shift0, group=shift2, promoted=shift4, public=shift8
+
+	return b.Flush()
+}

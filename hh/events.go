@@ -57,13 +57,22 @@ func (u *User) EventHandler(b protocol.Buffer) {
 	case 2596:
 		// pong
 	case 2110:
+		/*
+			todo:
+			NewNavigatorSettings
+			NewNavigatorSavedSearches
+			NewNavigatorEventCategories
+		*/
 		u.write(protocol.NewNavigatorMetaData())
 		u.write(protocol.NewNavigatorLiftedRooms())
 		u.write(protocol.NewNavigatorCollapsedCategories())
+	case 249:
+		view := b.ReadString()
+		query := b.ReadString()
+		u.write(protocol.NewNavigatorSearchResults(view, query))
 	/*
 
-		case 249:
-			RequestNewNavigatorRooms(c, p)
+
 		case 2752:
 			RequestCreateRoom(c, p)
 		case 2312:
