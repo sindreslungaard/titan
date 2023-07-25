@@ -4,7 +4,13 @@ type Option[T any] struct {
 	value *T
 }
 
-func (o Option[T]) unwrap() (value *T, ok bool) {
+func option[T any]() *Option[T] {
+	return &Option[T]{
+		value: nil,
+	}
+}
+
+func (o *Option[T]) unwrap() (value *T, ok bool) {
 	if o.value == nil {
 		return nil, false
 	}
@@ -12,16 +18,15 @@ func (o Option[T]) unwrap() (value *T, ok bool) {
 	return value, true
 }
 
-func option[T any]() Option[T] {
-	return Option[T]{
-		value: nil,
-	}
-}
-
-func (o Option[T]) set(value *T) {
+func (o *Option[T]) set(value *T) *Option[T] {
 	o.value = value
+	return o
 }
 
-func (o Option[T]) clear(value *T) {
+func (o *Option[T]) clear(value *T) {
 	o.value = nil
+}
+
+func (o *Option[T]) some() bool {
+	return o.value != nil
 }

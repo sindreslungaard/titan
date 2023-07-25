@@ -118,7 +118,7 @@ func tilemap(heightmap string, doorX, doorY int) (ret *TileMap) {
 	}
 }
 
-func (r *Room) ValidTile(x, y int) bool {
+func (r *Room) validtile(x, y int) bool {
 	r.tilemap.mu.Lock()
 	defer r.tilemap.mu.Unlock()
 
@@ -133,7 +133,7 @@ func (r *Room) ValidTile(x, y int) bool {
 	return true
 }
 
-func (r *Room) TileHeight(x int, y int) int {
+func (r *Room) tileheight(x int, y int) int {
 	r.tilemap.mu.RLock()
 	defer r.tilemap.mu.RUnlock()
 
@@ -254,4 +254,44 @@ func (c *CoordinatedMap) IsFree(point Point) bool {
 
 	return false
 
+}
+
+type PointMap[K comparable, T any] struct {
+	fastLock sync.RWMutex
+	points   map[Point]*Store[K, T]
+}
+
+func pointmap[K comparable, T any]() PointMap[K, T] {
+	return PointMap[K, T]{
+		points: map[Point]*Store[K, T]{},
+	}
+}
+
+func (m *PointMap[K, T]) set(point Point, key K, val *T) {
+	m.fastLock.Lock()
+	defer m.fastLock.Unlock()
+
+	_, ok := m.points[point]
+
+	if !ok {
+		d := store[K, T]()
+		m.points[point] = &d
+	}
+
+	d := m.points[point]
+
+	d.add(key, val)
+}
+
+func (m *PointMap[K, T]) remove(point Point, key K) {
+	m.fastLock.Lock()
+	defer m.fastLock.Unlock()
+
+	d, ok := m.points[point]
+
+	if !ok {
+		return
+	}
+
+	d.remove(key)
 }

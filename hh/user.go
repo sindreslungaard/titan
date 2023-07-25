@@ -15,11 +15,12 @@ type Session interface {
 }
 
 type User struct {
+	id      int
 	data    db.User
 	session Session
 
-	room     Option[Room]
-	roomuser Option[RoomUser]
+	room     *Option[Room]
+	roomuser *Option[RoomUser]
 }
 
 func newuser(session Session, data db.User) *User {
@@ -30,6 +31,7 @@ func newuser(session Session, data db.User) *User {
 	}
 
 	u := &User{
+		id:      data.ID,
 		data:    data,
 		session: session,
 
@@ -37,7 +39,7 @@ func newuser(session Session, data db.User) *User {
 		roomuser: option[RoomUser](),
 	}
 
-	users.add(data.ID, u)
+	users.add(u.id, u)
 
 	return u
 }

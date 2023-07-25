@@ -13,7 +13,12 @@ type Room struct {
 	id      int
 	data    db.Room
 	tilemap *TileMap
-	users   Store[int, RoomUser]
+	users   Store[uint64, RoomUser]
+
+	userpoints PointMap[uint64, RoomUser]
+
+	nextuserid uint64
+	nextitemid uint64
 
 	closed   uint32
 	sigclose chan bool
@@ -35,7 +40,7 @@ func loadroom(id int) (*Room, bool) {
 		id:      data.ID,
 		data:    data,
 		tilemap: tilemap(data.FloorPlan, data.DoorX, data.DoorY),
-		users:   store[int, RoomUser](),
+		users:   store[uint64, RoomUser](),
 
 		closed:   0,
 		sigclose: make(chan bool),
@@ -82,6 +87,39 @@ func (r *Room) broadcast(data []byte, exclude ...*RoomUser) {
 			}
 		}
 
-		u.host.write(data)
+		u.write(data)
 	}
+}
+
+func (r *Room) newroomuser(host *User) {
+	h, ok := users.find(host.id)
+
+	if ok && h.roomuser.some() {
+		// todo: remove from current room
+	}
+
+	id := atomic.AddUint64(&r.nextuserid, 1)
+
+	u := &RoomUser{
+		id:   id,
+		host: option[User]().set(host),
+
+		x: r.tilemap.doorX,
+		y: r.tilemap.doorY,
+		z: float32(r.tilemap.tiles[r.tilemap.doorY][r.tilemap.doorX].height),
+
+		prevX: -1,
+		prevY: -1,
+
+		targetX: r.tilemap.doorX,
+		targetY: r.tilemap.doorY,
+
+		kickcycle: -1,
+		direction: 2,
+		flatctrl:  0,
+	}
+
+	// todo: handle teleporting
+	// todo: handle room rights
+
 }
