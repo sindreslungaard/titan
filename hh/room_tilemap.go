@@ -4,6 +4,7 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"titan/program"
 )
 
 const (
@@ -25,8 +26,8 @@ type TileMap struct {
 	tiles     [][]Tile
 	mu        sync.RWMutex
 
-	SizeX int
-	SizeY int
+	sizeX int
+	sizeY int
 
 	doorX int
 	doorY int
@@ -35,12 +36,9 @@ type TileMap struct {
 }
 
 func tilemap(heightmap string, doorX, doorY int) (ret *TileMap) {
-
-	defer func() {
-		if r := recover(); r != nil {
-			ret = tilemap(FallbackHeightmap, 0, 0)
-		}
-	}()
+	defer program.RecoverAnd(func() {
+		ret = tilemap(FallbackHeightmap, 0, 0)
+	})
 
 	heightmap = strings.ReplaceAll(heightmap, "\r", "")
 	heightmap = strings.ReplaceAll(heightmap, " ", "\n")
@@ -112,43 +110,38 @@ func tilemap(heightmap string, doorX, doorY int) (ret *TileMap) {
 			points: map[Point]int{},
 		},
 
-		SizeX: sizeX - 1,
-		SizeY: sizeY - 1,
+		sizeX: sizeX - 1,
+		sizeY: sizeY - 1,
 
 		doorX: doorX,
 		doorY: doorY,
 	}
-
 }
 
 func (r *Room) ValidTile(x, y int) bool {
+	r.tilemap.mu.Lock()
+	defer r.tilemap.mu.Unlock()
 
-	r.Tilemap.mu.Lock()
-	defer r.Tilemap.mu.Unlock()
-
-	if x > r.Tilemap.SizeY || y > r.Tilemap.SizeX {
+	if x > r.tilemap.sizeY || y > r.tilemap.sizeX {
 		return false
 	}
 
-	if r.Tilemap.tiles[y][x].state == 0 {
+	if r.tilemap.tiles[y][x].state == 0 {
 		return false
 	}
 
 	return true
-
 }
 
 func (r *Room) TileHeight(x int, y int) int {
+	r.tilemap.mu.RLock()
+	defer r.tilemap.mu.RUnlock()
 
-	r.Tilemap.mu.RLock()
-	defer r.Tilemap.mu.RUnlock()
-
-	return r.Tilemap.tiles[y][x].height
-
+	return r.tilemap.tiles[y][x].height
 }
 
 func (r *Room) CoordinatedMap() *CoordinatedMap {
-	return r.Tilemap.coordinatedMap
+	return r.tilemap.coordinatedMap
 }
 
 func HeightmapForModel(model int) string {
