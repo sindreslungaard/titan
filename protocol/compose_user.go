@@ -1,5 +1,7 @@
 package protocol
 
+import "fmt"
+
 func UserHomeRoom(home int, lobby int) []byte {
 	b := EmptyBuffer()
 	b.WriteShort(UserHomeRoomHeader)
@@ -138,6 +140,14 @@ func UserData(id int, username string, figure string, gender string, motto strin
 	b.WriteString("01-01-1970 00:00:00")
 	b.WriteBoolean(false)
 	b.WriteBoolean(false)
+
+	return b.Flush()
+}
+
+func UserCredits(credits int) []byte {
+	b := EmptyBuffer()
+	b.WriteShort(UserCreditsHeader)
+	b.WriteString(fmt.Sprintf("%v.0", credits))
 
 	return b.Flush()
 }

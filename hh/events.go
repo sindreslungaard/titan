@@ -52,6 +52,33 @@ func (u *User) EventHandler(b protocol.Buffer) {
 		))
 		// todo: user perks msg
 		// todo: memenu settings
+	case 273:
+		u.write(protocol.UserCredits(u.data.Credits))
+	case 2596:
+		// pong
+	case 2110:
+		u.write(protocol.NewNavigatorMetaData())
+		u.write(protocol.NewNavigatorLiftedRooms())
+		u.write(protocol.NewNavigatorCollapsedCategories())
+	/*
+
+		case 249:
+			RequestNewNavigatorRooms(c, p)
+		case 2752:
+			RequestCreateRoom(c, p)
+		case 2312:
+			RequestRoomLoad(c, p)
+		case 3898, 2300:
+			RequestRoomEnter(c, p)
+		case 3320:
+			Walk(c, p)
+		case 1314:
+			Talk(c, p)
+		case 2730:
+			UserSaveLook(c, p)
+		case 1195:
+			RequestCatalogMode(c, p)
+	*/
 	default:
 		log.Debug().Int("header", header).Msg("Unknown header")
 	}
