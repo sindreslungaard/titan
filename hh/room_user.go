@@ -1,6 +1,8 @@
 package hh
 
-import "github.com/rs/zerolog/log"
+import (
+	"titan/protocol"
+)
 
 type RoomUserEnterMode int
 
@@ -11,7 +13,7 @@ const (
 
 type RoomUser struct {
 	id   uint64
-	host *Option[User]
+	host *User
 
 	flatctrl int
 
@@ -41,16 +43,47 @@ type RoomUser struct {
 }
 
 func (u *RoomUser) write(data []byte) {
-	host, ok := u.host.unwrap()
-
-	if !ok {
-		log.Debug().Msg("Can't write to roomuser without host")
-		return
-	}
-
-	host.write(data)
+	u.host.write(data)
 }
 
 func (u *RoomUser) point() Point {
 	return Point{X: u.x, Y: u.y}
+}
+
+func (u *RoomUser) serialize() protocol.SerializedRoomUser {
+	return protocol.SerializedRoomUser{
+		ID:               u.host.id,
+		Username:         u.host.data.Username,
+		Motto:            u.host.data.Motto,
+		Look:             u.host.data.Figure,
+		VID:              int(u.id),
+		X:                u.x,
+		Y:                u.y,
+		Z:                u.z,
+		Direction:        u.direction,
+		Gender:           u.host.data.Gender,
+		AchievementScore: 0,
+	}
+}
+
+func (u *RoomUser) serializestatus() protocol.SerializedRoomUserStatus {
+	fromX := u.x
+	fromY := u.y
+	fromZ := u.z
+
+	if u.walking {
+		fromX = u.prevX
+		fromY = u.prevY
+		fromZ = u.prevZ
+	}
+
+	return protocol.SerializedRoomUserStatus{
+		VID:          int(u.id),
+		PrevX:        fromX,
+		PrevY:        fromY,
+		PrevZ:        fromZ,
+		HeadRotation: u.direction,
+		BodyRotation: u.direction,
+		Statuses:     "",
+	}
 }

@@ -110,7 +110,7 @@ func (r *Room) newroomuser(host *User) *RoomUser {
 
 	u := &RoomUser{
 		id:   id,
-		host: option[User]().set(host),
+		host: host,
 
 		x: r.tilemap.doorX,
 		y: r.tilemap.doorY,
@@ -136,10 +136,26 @@ func (r *Room) newroomuser(host *User) *RoomUser {
 	host.room.set(r)
 	host.roomuser.set(u)
 
+	// for users already in the room
+	r.broadcast(protocol.RoomUsers([]protocol.SerializedRoomUser{u.serialize()}), u)
+	r.broadcast(protocol.RoomUserStatus([]protocol.SerializedRoomUserStatus{u.serializestatus()}))
+
+	// for the new user
+	currentusers := []protocol.SerializedRoomUser{}
+	currentstatuses := []protocol.SerializedRoomUserStatus{}
+
+	for _, x := range r.users.iter() {
+		currentusers = append(currentusers, x.serialize())
+		currentstatuses = append(currentstatuses, x.serializestatus())
+	}
+
 	u.write(protocol.RoomHeightmap(
 		strings.ReplaceAll(r.data.FloorPlan, "\n", "\r"),
 		r.data.WallHeight,
 	))
+
+	u.write(protocol.RoomUsers(currentusers))
+	u.write(protocol.RoomUserStatus(currentstatuses))
 
 	return u
 }
