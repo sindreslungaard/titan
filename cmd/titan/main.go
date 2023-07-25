@@ -3,6 +3,7 @@ package main
 import (
 	"os"
 	"titan/db"
+	"titan/hh"
 	"titan/network"
 
 	"github.com/rs/zerolog"
@@ -29,6 +30,6 @@ func main() {
 	}
 
 	log.Fatal().Err(network.NewServer().OnConnect(func(s *network.Socket) {
-		println("message")
+		s.OnReceive(hh.UnauthenticatedEventHandler(s))
 	}).Listen(2096)).Msg("Server error")
 }

@@ -66,13 +66,15 @@ func (s *Server) connect(w http.ResponseWriter, r *http.Request) {
 		conn:   conn,
 		closed: 0,
 		write:  make(chan []byte),
-		Receive: func(b protocol.Buffer) {
+		receive: func(b protocol.Buffer) {
 			log.Warn().Msg("Default socket receive handler is being used")
 		},
-		OnClose: func() {
+		onclose: func() {
 			log.Warn().Msg("Default socket close handler is being used")
 		},
 	}
+
+	s.connectionhandler(socket)
 
 	go socket.readproc()
 	go socket.writeproc()

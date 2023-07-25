@@ -28,8 +28,8 @@ type Socket struct {
 	closed uint32
 
 	write   chan []byte
-	Receive MessageHandlerFunc
-	OnClose SocketClosedHandlerFunc
+	receive MessageHandlerFunc
+	onclose SocketClosedHandlerFunc
 }
 
 func (s *Socket) readproc() {
@@ -57,7 +57,16 @@ func (s *Socket) readproc() {
 			return
 		}
 
-		s.Receive(protocol.BufferFrom(data))
+		if log.Logger.GetLevel() <= 0 {
+			buf := make([]byte, len(data))
+			copy(buf, data)
+			b := protocol.BufferFrom(buf)
+			b.ReadInt()
+			header := b.ReadShort()
+			log.Debug().Int("header", int(header)).Bytes("payload", buf).Msg("IN ")
+		}
+
+		s.receive(protocol.BufferFrom(data))
 	}
 }
 
@@ -110,7 +119,7 @@ func (s *Socket) Write(data []byte) {
 		b := protocol.BufferFrom(data)
 		b.ReadInt()
 		header := b.ReadShort()
-		log.Debug().Int("header", int(header)).Bytes("payload", data).Msg("OUT  ")
+		log.Debug().Int("header", int(header)).Bytes("payload", data).Msg("OUT")
 	}
 
 	s.write <- data
@@ -127,11 +136,19 @@ func (s *Socket) Close() {
 
 	func() {
 		defer program.Recover()
-		s.OnClose()
+		s.onclose()
 	}()
 
 	s.conn.Close()
 	close(s.write)
 
 	log.Debug().Uint64("id", s.id).Msg("Closed connection")
+}
+
+func (s *Socket) OnReceive(f func(protocol.Buffer)) {
+	s.receive = f
+}
+
+func (s *Socket) OnClose(cb func()) {
+	s.onclose = cb
 }
