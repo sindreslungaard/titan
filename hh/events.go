@@ -1,6 +1,7 @@
 package hh
 
 import (
+	"time"
 	"titan/program"
 	"titan/protocol"
 
@@ -70,15 +71,50 @@ func (u *User) EventHandler(b protocol.Buffer) {
 		view := b.ReadString()
 		query := b.ReadString()
 		u.write(protocol.NewNavigatorSearchResults(view, query))
+	case 2312:
+		u.roomrequest.clear()
+
+		// todo: leave current room
+
+		id := b.ReadInt()
+		password := b.ReadString()
+
+		r, ok := loadroom(id)
+
+		if !ok {
+			u.alert("Failed to load room")
+			return
+		}
+
+		if r.data.Password != password {
+			u.alert("Incorrect password")
+			return
+		}
+
+		u.roomrequest.set(&RoomEnterRequest{
+			id:        r.id,
+			password:  password,
+			timestamp: time.Now(),
+		})
+
+		u.write(protocol.RoomOpen())
+		u.write(protocol.RoomModel(r.id))
+	case 3898, 2300:
+		roomrequest, ok := u.roomrequest.unwrap()
+		if !ok {
+			u.alert("Invalid room request")
+			return
+		}
+
+		if roomrequest.timestamp.After(time.Now().Add(time.Second * 5)) {
+			u.alert("Expired room request")
+			return
+		}
+		u.gotoroom(roomrequest.id)
 	/*
-
-
 		case 2752:
 			RequestCreateRoom(c, p)
-		case 2312:
-			RequestRoomLoad(c, p)
-		case 3898, 2300:
-			RequestRoomEnter(c, p)
+
 		case 3320:
 			Walk(c, p)
 		case 1314:

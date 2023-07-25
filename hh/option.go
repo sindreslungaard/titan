@@ -15,7 +15,7 @@ func (o *Option[T]) unwrap() (value *T, ok bool) {
 		return nil, false
 	}
 
-	return value, true
+	return o.value, true
 }
 
 func (o *Option[T]) set(value *T) *Option[T] {
@@ -23,7 +23,7 @@ func (o *Option[T]) set(value *T) *Option[T] {
 	return o
 }
 
-func (o *Option[T]) clear(value *T) {
+func (o *Option[T]) clear() {
 	o.value = nil
 }
 

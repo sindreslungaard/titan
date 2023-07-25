@@ -1,21 +1,28 @@
 package hh
 
 import (
+	"strings"
 	"sync/atomic"
+	"time"
 	"titan/db"
+	"titan/protocol"
 
 	"github.com/rs/zerolog/log"
 )
 
 var rooms = store[int, Room]()
 
+type RoomEnterRequest struct {
+	id        int
+	password  string
+	timestamp time.Time
+}
+
 type Room struct {
 	id      int
 	data    db.Room
 	tilemap *TileMap
 	users   Store[uint64, RoomUser]
-
-	userpoints PointMap[uint64, RoomUser]
 
 	nextuserid uint64
 	nextitemid uint64
@@ -47,6 +54,7 @@ func loadroom(id int) (*Room, bool) {
 	}
 
 	rooms.add(r.id, r)
+	go r.process()
 
 	return r, true
 }
@@ -91,7 +99,7 @@ func (r *Room) broadcast(data []byte, exclude ...*RoomUser) {
 	}
 }
 
-func (r *Room) newroomuser(host *User) {
+func (r *Room) newroomuser(host *User) *RoomUser {
 	h, ok := users.find(host.id)
 
 	if ok && h.roomuser.some() {
@@ -122,8 +130,16 @@ func (r *Room) newroomuser(host *User) {
 	// todo: handle teleporting
 	// todo: handle room rights
 
-	r.userpoints.set(u.point(), u.id, u)
 	r.tilemap.coordinatedMap.Add(u.point())
 	r.users.add(u.id, u)
 
+	host.room.set(r)
+	host.roomuser.set(u)
+
+	u.write(protocol.RoomHeightmap(
+		strings.ReplaceAll(r.data.FloorPlan, "\n", "\r"),
+		r.data.WallHeight,
+	))
+
+	return u
 }

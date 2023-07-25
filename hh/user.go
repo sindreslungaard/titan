@@ -19,8 +19,9 @@ type User struct {
 	data    db.User
 	session Session
 
-	room     *Option[Room]
-	roomuser *Option[RoomUser]
+	room        *Option[Room]
+	roomuser    *Option[RoomUser]
+	roomrequest *Option[RoomEnterRequest]
 }
 
 func newuser(session Session, data db.User) *User {
@@ -35,8 +36,9 @@ func newuser(session Session, data db.User) *User {
 		data:    data,
 		session: session,
 
-		room:     option[Room](),
-		roomuser: option[RoomUser](),
+		room:        option[Room](),
+		roomuser:    option[RoomUser](),
+		roomrequest: option[RoomEnterRequest](),
 	}
 
 	users.add(u.id, u)
@@ -67,4 +69,21 @@ func (u *User) welcome() {
 
 	// todo:
 	// inventory achievements msg
+}
+
+func (u *User) alert(msg string) {
+	u.write(protocol.GenericAlert(msg))
+}
+
+func (u *User) gotoroom(id int) {
+	r, ok := loadroom(id)
+
+	if !ok {
+		u.alert("Couldn't load the room")
+		return
+	}
+
+	// leave current room
+
+	r.newroomuser(u)
 }
