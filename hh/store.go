@@ -8,7 +8,7 @@ type Dictionary[K comparable, T any] struct {
 	store map[K]*T
 }
 
-func NewDictionary[K comparable, T any]() Dictionary[K, T] {
+func Store[K comparable, T any]() Dictionary[K, T] {
 	return Dictionary[K, T]{
 		src:   []*T{},
 		store: make(map[K]*T),
