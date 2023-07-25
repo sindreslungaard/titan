@@ -119,3 +119,25 @@ func GenericAlert(msg string) []byte {
 
 	return b.Flush()
 }
+
+func UserData(id int, username string, figure string, gender string, motto string, respectReceived int, respectToGive int, petRespectToGive int) []byte {
+	b := EmptyBuffer()
+	b.WriteShort(UserDataHeader)
+
+	b.WriteInt(id)
+	b.WriteString(username)
+	b.WriteString(figure)
+	b.WriteString(gender)
+	b.WriteString(motto)
+	b.WriteString(username)
+	b.WriteBoolean(false)
+	b.WriteInt(respectReceived)
+	b.WriteInt(respectToGive)
+	b.WriteInt(petRespectToGive)
+	b.WriteBoolean(false)
+	b.WriteString("01-01-1970 00:00:00")
+	b.WriteBoolean(false)
+	b.WriteBoolean(false)
+
+	return b.Flush()
+}
