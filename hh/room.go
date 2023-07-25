@@ -122,4 +122,8 @@ func (r *Room) newroomuser(host *User) {
 	// todo: handle teleporting
 	// todo: handle room rights
 
+	r.userpoints.set(u.point(), u.id, u)
+	r.tilemap.coordinatedMap.Add(u.point())
+	r.users.add(u.id, u)
+
 }
