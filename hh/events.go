@@ -50,6 +50,8 @@ func (u *User) EventHandler(b protocol.Buffer) {
 			u.data.RespectToGive,
 			u.data.PetRespectToGive,
 		))
+		// todo: user perks msg
+		// todo: memenu settings
 	default:
 		log.Debug().Int("header", header).Msg("Unknown header")
 	}
