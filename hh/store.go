@@ -8,14 +8,14 @@ type Dictionary[K comparable, T any] struct {
 	store map[K]*T
 }
 
-func Store[K comparable, T any]() Dictionary[K, T] {
+func store[K comparable, T any]() Dictionary[K, T] {
 	return Dictionary[K, T]{
 		src:   []*T{},
 		store: make(map[K]*T),
 	}
 }
 
-func (d *Dictionary[K, T]) Iter() []*T {
+func (d *Dictionary[K, T]) iter() []*T {
 	d.RLock()
 	defer d.RUnlock()
 
@@ -26,7 +26,7 @@ func (d *Dictionary[K, T]) Iter() []*T {
 	return tmp
 }
 
-func (d *Dictionary[K, T]) Add(key K, value *T) {
+func (d *Dictionary[K, T]) add(key K, value *T) {
 	d.Lock()
 	defer d.Unlock()
 
@@ -40,7 +40,7 @@ func (d *Dictionary[K, T]) Add(key K, value *T) {
 	d.store[key] = value
 }
 
-func (d *Dictionary[K, T]) Remove(key K) {
+func (d *Dictionary[K, T]) remove(key K) {
 	d.Lock()
 	defer d.Unlock()
 
@@ -66,7 +66,7 @@ func (d *Dictionary[K, T]) Remove(key K) {
 	delete(d.store, key)
 }
 
-func (d *Dictionary[K, T]) Find(key K) (*T, bool) {
+func (d *Dictionary[K, T]) find(key K) (*T, bool) {
 	d.RLock()
 	defer d.RUnlock()
 
