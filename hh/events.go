@@ -111,12 +111,11 @@ func (u *User) EventHandler(b protocol.Buffer) {
 			return
 		}
 		u.gotoroom(roomrequest.id)
+	case 3320:
+		e_walk(u, b)
 	/*
 		case 2752:
 			RequestCreateRoom(c, p)
-
-		case 3320:
-			Walk(c, p)
 		case 1314:
 			Talk(c, p)
 		case 2730:

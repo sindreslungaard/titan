@@ -1,6 +1,7 @@
 package hh
 
 import (
+	"fmt"
 	"time"
 	"titan/program"
 	"titan/protocol"
@@ -79,7 +80,7 @@ func (r *Room) tickroomusers() {
 		// clear the users movement if they don't want to move
 		if !mv {
 			if u.walking {
-				//a.Actions.Remove(ActionMove)
+				u.actions.remove(ActionMove)
 				u.setstep = true
 			}
 			u.walking = false
@@ -88,7 +89,7 @@ func (r *Room) tickroomusers() {
 			x, y := r.pathfind(u.x, u.y, u.z, u.targetX, u.targetY)
 
 			if x == u.x && y == u.y {
-				//u.Actions.Remove(ActionMove)
+				u.actions.remove(ActionMove)
 				u.target(x, y)
 				u.walking = false
 				u.setstep = true
@@ -99,14 +100,14 @@ func (r *Room) tickroomusers() {
 				}
 
 				u.walking = true
-				//u.Actions.Remove(ActionSit)
+				u.actions.remove(ActionSit)
 
 				u.direction = direction(u.x, u.y, x, y)
 
 				//z, _ := r.ItemSystem.HighestPointForUser(x, y)
 				z := float32(r.tileheight(x, y)) // todo: replace this with above code
 				r.mv(u, x, y, z)
-				// a.Actions.Add(ActionMove, Action{value: fmt.Sprintf("%v,%v,%.2f", a.X, a.Y, a.Z), duration: -1})
+				u.actions.add(ActionMove, Action{value: fmt.Sprintf("%v,%v,%.2f", u.x, u.y, u.z), duration: -1})
 			}
 		}
 
@@ -130,9 +131,9 @@ func (r *Room) tickroomusers() {
 
 		}
 
-		/* if a.Actions.tick() {
-			a.NeedsUpdate = true
-		} */
+		if u.actions.tick() {
+			u.needsupdate = true
+		}
 	}
 
 	updates := []protocol.SerializedRoomUserStatus{}

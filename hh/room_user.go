@@ -15,6 +15,8 @@ type RoomUser struct {
 	id   uint64
 	host *User
 
+	actions Actions
+
 	flatctrl int
 
 	x int
@@ -90,6 +92,6 @@ func (u *RoomUser) serializestatus() protocol.SerializedRoomUserStatus {
 		PrevZ:        fromZ,
 		HeadRotation: u.direction,
 		BodyRotation: u.direction,
-		Statuses:     "",
+		Statuses:     u.actions.serialized(),
 	}
 }

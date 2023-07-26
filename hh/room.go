@@ -109,8 +109,9 @@ func (r *Room) newroomuser(host *User) *RoomUser {
 	id := atomic.AddUint64(&r.nextuserid, 1)
 
 	u := &RoomUser{
-		id:   id,
-		host: host,
+		id:      id,
+		host:    host,
+		actions: actions(),
 
 		x: r.tilemap.doorX,
 		y: r.tilemap.doorY,
@@ -179,5 +180,5 @@ func (r *Room) mv(u *RoomUser, x int, y int, z float32) {
 	u.y = y
 	u.z = z
 
-	log.Debug().Int("x", x).Int("y", y).Str("user", u.host.data.Username).Msg("Roomuser moved")
+	log.Debug().Uint64("id", u.id).Int("x", x).Int("y", y).Str("user", u.host.data.Username).Msg("Roomuser moved")
 }
