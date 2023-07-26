@@ -7,21 +7,22 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func releaseversion(s Session, b protocol.Buffer) {
+func e_releaseversion(s Session, b protocol.Buffer) {
 	b.ReadString()
 }
 
-func securelogin(s Session, b protocol.Buffer) (*User, bool) {
+func e_securelogin(s Session, b protocol.Buffer) {
 	sso := b.ReadString()
 
 	var data db.User
 	if err := db.Conn.Take(&data, "sso = ?", sso).Error; err != nil {
 		log.Debug().Str("sso", sso).Msg("Failed to find sso for user")
 		s.Close()
-		return nil, false
+		return
 	}
 
 	u := newuser(s, data)
 
-	return u, true
+	s.OnReceive(u.EventHandler)
+	u.welcome()
 }
