@@ -27,6 +27,7 @@ type RoomUser struct {
 
 	direction int
 	walking   bool
+	setstep   bool
 
 	targetX int
 	targetY int
@@ -48,6 +49,11 @@ func (u *RoomUser) write(data []byte) {
 
 func (u *RoomUser) point() Point {
 	return Point{X: u.x, Y: u.y}
+}
+
+func (u *RoomUser) target(x, y int) {
+	u.targetX = x
+	u.targetY = y
 }
 
 func (u *RoomUser) serialize() protocol.SerializedRoomUser {

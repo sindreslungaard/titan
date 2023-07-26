@@ -13,7 +13,6 @@ type Location struct {
 
 // Pathfind finds the next tile available between the current and target pos
 func (r *Room) pathfind(fromX, fromY int, fromZ float32, toX, toY int) (x, y int) {
-
 	r.tilemap.mu.RLock()
 	defer r.tilemap.mu.RUnlock()
 

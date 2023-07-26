@@ -159,3 +159,25 @@ func (r *Room) newroomuser(host *User) *RoomUser {
 
 	return u
 }
+
+func (r *Room) mv(u *RoomUser, x int, y int, z float32) {
+	point := u.point()
+
+	//system.avatarPoints.Remove(point, a.VID)
+	r.tilemap.coordinatedMap.Remove(point)
+
+	newPoint := Point{X: x, Y: y}
+
+	//system.avatarPoints.Set(newPoint, a.VID, a)
+	r.tilemap.coordinatedMap.Add(newPoint)
+
+	u.prevX = u.x
+	u.prevY = u.y
+	u.prevZ = u.z
+
+	u.x = x
+	u.y = y
+	u.z = z
+
+	log.Debug().Int("x", x).Int("y", y).Str("user", u.host.data.Username).Msg("Roomuser moved")
+}
