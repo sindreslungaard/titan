@@ -18,7 +18,7 @@ func NewNavigatorMetaData() []byte {
 	b.WriteString("myworld_view")
 	b.WriteInt(0)
 
-	return b.Flush()
+	return b.Compose()
 }
 
 func NewNavigatorLiftedRooms() []byte {
@@ -26,7 +26,7 @@ func NewNavigatorLiftedRooms() []byte {
 	b.WriteShort(NewNavigatorLiftedRoomsHeader)
 	b.WriteInt(0)
 
-	return b.Flush()
+	return b.Compose()
 }
 
 func NewNavigatorCollapsedCategories() []byte {
@@ -80,7 +80,7 @@ func NewNavigatorCollapsedCategories() []byte {
 	b.WriteString("eventcategory__Jobs")
 	b.WriteString("eventcategory__Group Events")
 
-	return b.Flush()
+	return b.Compose()
 }
 
 func NewNavigatorSearchResults(view string, query string) []byte {
@@ -117,5 +117,5 @@ func NewNavigatorSearchResults(view string, query string) []byte {
 	b.WriteInt(0) // num tags
 	b.WriteInt(0) // bitmask, base=shift0, group=shift2, promoted=shift4, public=shift8
 
-	return b.Flush()
+	return b.Compose()
 }

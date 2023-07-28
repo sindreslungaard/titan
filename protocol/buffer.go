@@ -66,7 +66,7 @@ func (p Buffer) WriteBoolean(b bool) {
 	binary.Write(p.buffer, binary.BigEndian, b)
 }
 
-func (p Buffer) Flush() []byte {
+func (p Buffer) Compose() []byte {
 	msg := make([]byte, 4)
 	binary.BigEndian.PutUint32(msg, uint32(p.buffer.Len()))
 	return append(msg, p.buffer.Bytes()...)

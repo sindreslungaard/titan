@@ -8,7 +8,7 @@ func UserHomeRoom(home int, lobby int) []byte {
 	b.WriteInt(home)
 	b.WriteInt(lobby)
 
-	return b.Flush()
+	return b.Compose()
 }
 
 func UserEffectsList() []byte {
@@ -16,7 +16,7 @@ func UserEffectsList() []byte {
 	b.WriteShort(UserEffectsListHeader)
 	b.WriteInt(0)
 
-	return b.Flush()
+	return b.Compose()
 }
 
 func UserClothes() []byte {
@@ -25,7 +25,7 @@ func UserClothes() []byte {
 	b.WriteInt(0)
 	b.WriteInt(0)
 
-	return b.Flush()
+	return b.Compose()
 }
 
 func NewUserIdentity() []byte {
@@ -33,7 +33,7 @@ func NewUserIdentity() []byte {
 	b.WriteShort(NewUserIdentityHeader)
 	b.WriteInt(1)
 
-	return b.Flush()
+	return b.Compose()
 }
 
 func UserPermissions(rank int, clublevel int, ambassador bool) []byte {
@@ -43,7 +43,7 @@ func UserPermissions(rank int, clublevel int, ambassador bool) []byte {
 	b.WriteInt(rank)
 	b.WriteBoolean(ambassador)
 
-	return b.Flush()
+	return b.Compose()
 }
 
 func AvailabilityStatusMessage(open bool, closing bool, authentic bool) []byte {
@@ -53,14 +53,14 @@ func AvailabilityStatusMessage(open bool, closing bool, authentic bool) []byte {
 	b.WriteBoolean(closing)
 	b.WriteBoolean(authentic)
 
-	return b.Flush()
+	return b.Compose()
 }
 
 func Ping() []byte {
 	b := EmptyBuffer()
 	b.WriteShort(PingHeader)
 
-	return b.Flush()
+	return b.Compose()
 }
 
 func EnableNotifications(enabled bool) []byte {
@@ -68,7 +68,7 @@ func EnableNotifications(enabled bool) []byte {
 	b.WriteShort(EnableNotificationsHeader)
 	b.WriteBoolean(enabled)
 
-	return b.Flush()
+	return b.Compose()
 }
 
 func UserAchievementScore(score int) []byte {
@@ -76,7 +76,7 @@ func UserAchievementScore(score int) []byte {
 	b.WriteShort(UserAchievementScoreHeader)
 	b.WriteInt(score)
 
-	return b.Flush()
+	return b.Compose()
 }
 
 func IsFirstLoginOfDay(value bool) []byte {
@@ -84,7 +84,7 @@ func IsFirstLoginOfDay(value bool) []byte {
 	b.WriteShort(IsFirstLoginOfDayHeader)
 	b.WriteBoolean(value)
 
-	return b.Flush()
+	return b.Compose()
 }
 
 func MysteryBoxKeys() []byte {
@@ -93,7 +93,7 @@ func MysteryBoxKeys() []byte {
 	b.WriteString("")
 	b.WriteString("")
 
-	return b.Flush()
+	return b.Compose()
 }
 
 func UserClub() []byte {
@@ -111,7 +111,7 @@ func UserClub() []byte {
 	b.WriteInt(365 * 60) // minutes 'til expiration (total)
 	b.WriteInt(1)        // last modified
 
-	return b.Flush()
+	return b.Compose()
 }
 
 func GenericAlert(msg string) []byte {
@@ -119,7 +119,7 @@ func GenericAlert(msg string) []byte {
 	b.WriteShort(GenericAlertHeader)
 	b.WriteString(msg)
 
-	return b.Flush()
+	return b.Compose()
 }
 
 func UserData(id int, username string, figure string, gender string, motto string, respectReceived int, respectToGive int, petRespectToGive int) []byte {
@@ -141,7 +141,7 @@ func UserData(id int, username string, figure string, gender string, motto strin
 	b.WriteBoolean(false)
 	b.WriteBoolean(false)
 
-	return b.Flush()
+	return b.Compose()
 }
 
 func UserCredits(credits int) []byte {
@@ -149,5 +149,5 @@ func UserCredits(credits int) []byte {
 	b.WriteShort(UserCreditsHeader)
 	b.WriteString(fmt.Sprintf("%v.0", credits))
 
-	return b.Flush()
+	return b.Compose()
 }

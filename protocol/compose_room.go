@@ -33,14 +33,14 @@ func RoomHeightmap(floorplan string, wallheight int) []byte {
 	b.WriteInt(wallheight)
 	b.WriteString(floorplan)
 
-	return b.Flush()
+	return b.Compose()
 }
 
 func RoomOpen() []byte {
 	b := EmptyBuffer()
 	b.WriteShort(RoomOpenHeader)
 
-	return b.Flush()
+	return b.Compose()
 }
 
 func RoomModel(roomID int) []byte {
@@ -49,7 +49,7 @@ func RoomModel(roomID int) []byte {
 	b.WriteString("custom")
 	b.WriteInt(roomID)
 
-	return b.Flush()
+	return b.Compose()
 }
 
 func RoomUsers(users []SerializedRoomUser) []byte {
@@ -78,7 +78,7 @@ func RoomUsers(users []SerializedRoomUser) []byte {
 		b.WriteBoolean(true)
 	}
 
-	return b.Flush()
+	return b.Compose()
 }
 
 func RoomUserStatus(users []SerializedRoomUserStatus) []byte {
@@ -100,7 +100,7 @@ func RoomUserStatus(users []SerializedRoomUserStatus) []byte {
 
 	}
 
-	return p.Flush()
+	return p.Compose()
 }
 
 func RoomUserRemove(id uint64) []byte {
@@ -109,5 +109,5 @@ func RoomUserRemove(id uint64) []byte {
 
 	b.WriteString(fmt.Sprintf("%v", id))
 
-	return b.Flush()
+	return b.Compose()
 }
