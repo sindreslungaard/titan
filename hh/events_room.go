@@ -8,8 +8,6 @@ import (
 func e_requestroom(u *User, b protocol.Buffer) {
 	u.roomrequest.clear()
 
-	// todo: leave current room
-
 	id := b.ReadInt()
 	password := b.ReadString()
 
@@ -46,6 +44,7 @@ func e_gotoroom(u *User, b protocol.Buffer) {
 		u.alert("Expired room request")
 		return
 	}
+
 	u.gotoroom(roomrequest.id)
 }
 

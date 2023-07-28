@@ -102,3 +102,12 @@ func RoomUserStatus(users []SerializedRoomUserStatus) []byte {
 
 	return p.Flush()
 }
+
+func RoomUserRemove(id uint64) []byte {
+	b := EmptyBuffer()
+	b.WriteShort(RoomUserRemoveHeader)
+
+	b.WriteString(fmt.Sprintf("%v", id))
+
+	return b.Flush()
+}

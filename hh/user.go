@@ -83,7 +83,18 @@ func (u *User) gotoroom(id int) {
 		return
 	}
 
-	// leave current room
+	u.exitroom()
+	r.mkuser(u)
+}
 
-	r.newroomuser(u)
+func (u *User) exitroom() {
+	r, ok := u.room.unwrap()
+	ru, ok2 := u.roomuser.unwrap()
+
+	if ok && ok2 {
+		r.rmuser(ru.id)
+	} else {
+		u.room.clear()
+		u.roomuser.clear()
+	}
 }

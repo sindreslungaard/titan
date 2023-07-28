@@ -70,7 +70,9 @@ func (r *Room) close() {
 
 	atomic.StoreUint32(&r.closed, 1)
 
-	// todo: remove roomusers
+	for _, u := range r.users.iter() {
+		r.rmuser(u.id)
+	}
 
 	r.sigclose <- true
 	close(r.sigclose)
@@ -99,7 +101,7 @@ func (r *Room) broadcast(data []byte, exclude ...*RoomUser) {
 	}
 }
 
-func (r *Room) newroomuser(host *User) *RoomUser {
+func (r *Room) mkuser(host *User) *RoomUser {
 	h, ok := users.find(host.id)
 
 	if ok && h.roomuser.some() {
@@ -109,9 +111,10 @@ func (r *Room) newroomuser(host *User) *RoomUser {
 	id := atomic.AddUint64(&r.nextuserid, 1)
 
 	u := &RoomUser{
-		id:      id,
-		host:    host,
-		actions: actions(),
+		id:       id,
+		username: host.data.Username,
+		host:     option[User]().set(host),
+		actions:  actions(),
 
 		x: r.tilemap.doorX,
 		y: r.tilemap.doorY,
@@ -161,6 +164,27 @@ func (r *Room) newroomuser(host *User) *RoomUser {
 	return u
 }
 
+func (r *Room) rmuser(id uint64) {
+	u, ok := r.users.find(id)
+
+	if !ok {
+		return
+	}
+
+	r.tilemap.coordinatedMap.Remove(u.point())
+	r.users.remove(u.id)
+
+	h, ok := u.host.unwrap()
+	if ok {
+		h.roomuser.clear()
+		h.room.clear()
+	}
+
+	u.host.clear()
+
+	r.broadcast(protocol.RoomUserRemove(u.id))
+}
+
 func (r *Room) mv(u *RoomUser, x int, y int, z float32) {
 	point := u.point()
 
@@ -180,5 +204,5 @@ func (r *Room) mv(u *RoomUser, x int, y int, z float32) {
 	u.y = y
 	u.z = z
 
-	log.Debug().Uint64("id", u.id).Int("x", x).Int("y", y).Str("user", u.host.data.Username).Msg("Roomuser moved")
+	log.Debug().Uint64("id", u.id).Int("x", x).Int("y", y).Str("user", u.username).Msg("Roomuser moved")
 }

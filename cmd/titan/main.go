@@ -29,6 +29,8 @@ func main() {
 		log.Fatal().Err(err).Msg("Database connection error")
 	}
 
+	go hh.StartAuthenticating()
+
 	log.Fatal().Err(network.NewServer().OnConnect(func(s *network.Socket) {
 		s.OnReceive(hh.UnauthenticatedEventHandler(s))
 	}).Listen(2096)).Msg("Server error")

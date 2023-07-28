@@ -12,8 +12,9 @@ const (
 )
 
 type RoomUser struct {
-	id   uint64
-	host *User
+	id       uint64
+	username string
+	host     *Option[User]
 
 	actions Actions
 
@@ -46,7 +47,13 @@ type RoomUser struct {
 }
 
 func (u *RoomUser) write(data []byte) {
-	u.host.write(data)
+	h, ok := u.host.unwrap()
+
+	if !ok {
+		return
+	}
+
+	h.write(data)
 }
 
 func (u *RoomUser) point() Point {
@@ -59,17 +66,25 @@ func (u *RoomUser) target(x, y int) {
 }
 
 func (u *RoomUser) serialize() protocol.SerializedRoomUser {
+	h, ok := u.host.unwrap()
+
+	if !ok {
+		return protocol.SerializedRoomUser{
+			Username: "undefined_host",
+		}
+	}
+
 	return protocol.SerializedRoomUser{
-		ID:               u.host.id,
-		Username:         u.host.data.Username,
-		Motto:            u.host.data.Motto,
-		Look:             u.host.data.Figure,
+		ID:               h.id,
+		Username:         h.data.Username,
+		Motto:            h.data.Motto,
+		Look:             h.data.Figure,
 		VID:              int(u.id),
 		X:                u.x,
 		Y:                u.y,
 		Z:                u.z,
 		Direction:        u.direction,
-		Gender:           u.host.data.Gender,
+		Gender:           h.data.Gender,
 		AchievementScore: 0,
 	}
 }
