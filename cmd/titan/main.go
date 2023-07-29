@@ -5,6 +5,7 @@ import (
 	"titan/db"
 	"titan/hh"
 	"titan/network"
+	"titan/program"
 
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
@@ -18,13 +19,16 @@ func init() {
 }
 
 func main() {
+	program.LoadConfig()
+	cnf := program.Config
+
 	if err := db.Connect(
-		os.Getenv("db_user"),
-		os.Getenv("db_pass"),
-		os.Getenv("db_host"),
-		os.Getenv("db_name"),
-		os.Getenv("db_port"),
-		os.Getenv("db_automigrate") == "true",
+		cnf.Mysql.User,
+		cnf.Mysql.Pass,
+		cnf.Mysql.Host,
+		cnf.Mysql.Name,
+		cnf.Mysql.Port,
+		cnf.Mysql.AutoMigrate,
 	); err != nil {
 		log.Fatal().Err(err).Msg("Database connection error")
 	}
