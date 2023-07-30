@@ -33,10 +33,11 @@ type User struct {
 }
 
 func newuser(session Session, data db.User) *User {
-	_, ok := users.find(data.ID)
+	clone, ok := users.find(data.ID)
 
 	if ok {
-		// block login or log the user out
+		clone.alert("You were logged in from a different session")
+		clone.logout()
 	}
 
 	u := &User{
@@ -48,6 +49,8 @@ func newuser(session Session, data db.User) *User {
 		roomuser:    option[RoomUser](),
 		roomrequest: option[RoomEnterRequest](),
 	}
+
+	session.OnClose(u.logout)
 
 	users.add(u.id, u)
 
@@ -110,9 +113,9 @@ func (u *User) exitroom() {
 func (u *User) updatefigure(g Gender, figure string) {
 	u.data.Gender = fmt.Sprint(g)
 	u.data.Figure = figure
-	
+
 	db.Conn.Save(&u.data)
-	
+
 	r, ok := u.room.unwrap()
 
 	if !ok {
@@ -120,10 +123,16 @@ func (u *User) updatefigure(g Gender, figure string) {
 	}
 
 	ru, ok := u.roomuser.unwrap()
-	
+
 	if !ok {
 		return
 	}
 
 	r.broadcast(protocol.RoomUserData(ru.id, figure, u.data.Gender, u.data.Motto, 0))
+}
+
+func (u *User) logout() {
+	u.exitroom()
+	users.remove(u.id)
+	u.session.Close()
 }
