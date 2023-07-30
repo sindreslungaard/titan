@@ -11,9 +11,9 @@ import (
 
 var Conn *gorm.DB
 
-func Connect(user string, password string, host string, dbname string, port string, automigrate bool) error {
+func Connect(user string, password string, host string, dbname string, port int, automigrate bool) error {
 	dialector := mysql.Open(fmt.Sprintf(
-		"%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
+		"%s:%s@tcp(%s:%v)/%s?charset=utf8mb4&parseTime=True&loc=Local",
 		user,
 		password,
 		host,
@@ -32,7 +32,7 @@ func Connect(user string, password string, host string, dbname string, port stri
 		return err
 	}
 
-	log.Info().Str("dbname", dbname).Str("user", user).Str("host", host).Str("port", port).Msg("Connected to database")
+	log.Info().Str("dbname", dbname).Str("user", user).Str("host", host).Int("port", port).Msg("Connected to database")
 
 	if automigrate {
 		log.Info().Msg("Migrating database models")

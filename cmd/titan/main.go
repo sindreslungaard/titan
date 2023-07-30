@@ -2,6 +2,7 @@ package main
 
 import (
 	"os"
+	"strings"
 	"titan/db"
 	"titan/hh"
 	"titan/network"
@@ -13,14 +14,35 @@ import (
 
 func init() {
 	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
-	log.Level(zerolog.DebugLevel)
-
 	log.Info().Msg("Starting..")
 }
 
 func main() {
 	program.LoadConfig()
 	cnf := program.Config
+
+	level := zerolog.InfoLevel
+
+	switch strings.ToLower(cnf.Titan.LogLevel) {
+	case "trace":
+		level = zerolog.TraceLevel
+	case "debug":
+		level = zerolog.DebugLevel
+	case "info":
+		level = zerolog.InfoLevel
+	case "warn":
+		level = zerolog.WarnLevel
+	case "error":
+		level = zerolog.ErrorLevel
+	case "fatal":
+		level = zerolog.FatalLevel
+	default:
+		level = zerolog.InfoLevel
+		log.Error().Str("level", cnf.Titan.LogLevel).Msg("Invalid log level, using 'info'")
+	}
+
+	log.Info().Msgf("Using log level %s", level.String())
+	zerolog.SetGlobalLevel(level)
 
 	if err := db.Connect(
 		cnf.Mysql.User,

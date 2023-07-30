@@ -57,13 +57,13 @@ func (s *Socket) readproc() {
 			return
 		}
 
-		if log.Logger.GetLevel() <= 0 {
+		if program.Config.Network.LogPackets {
 			buf := make([]byte, len(data))
 			copy(buf, data)
 			b := protocol.BufferFrom(buf)
 			b.ReadInt()
 			header := b.ReadShort()
-			log.Debug().Int("header", int(header)).Bytes("payload", buf).Msg("IN ")
+			log.Info().Int("header", int(header)).Bytes("payload", buf).Msg("IN ")
 		}
 
 		s.receive(protocol.BufferFrom(data))
@@ -115,11 +115,11 @@ func (s *Socket) Write(data []byte) {
 		return
 	}
 
-	if log.Logger.GetLevel() <= 0 {
+	if program.Config.Network.LogPackets {
 		b := protocol.BufferFrom(data)
 		b.ReadInt()
 		header := b.ReadShort()
-		log.Debug().Int("header", int(header)).Bytes("payload", data).Msg("OUT")
+		log.Info().Int("header", int(header)).Bytes("payload", data).Msg("OUT")
 	}
 
 	s.write <- data

@@ -9,17 +9,28 @@ import (
 
 var Config Configuration
 
+type TitanConfig struct {
+	LogLevel string `toml:"log_level"`
+}
+
 type MysqlConfig struct {
 	Host        string `toml:"db_host"`
 	User        string `toml:"db_user"`
 	Pass        string `toml:"db_pass"`
 	Name        string `toml:"db_name"`
-	Port        string `toml:"db_port"`
+	Port        int    `toml:"db_port"`
 	AutoMigrate bool   `toml:"db_auto_migrate"`
 }
 
+type NetworkConfig struct {
+	Port       int  `toml:"port"`
+	LogPackets bool `toml:"log_packets"`
+}
+
 type Configuration struct {
-	Mysql MysqlConfig `toml:"mysql"`
+	Titan   TitanConfig   `toml:"titan"`
+	Mysql   MysqlConfig   `toml:"mysql"`
+	Network NetworkConfig `toml:"network"`
 }
 
 func LoadConfig() {
@@ -42,13 +53,20 @@ func mkdefaultcnf() []byte {
 	log.Info().Msg("Couldn't find config file, creating a default one")
 
 	cnf := Configuration{
+		Titan: TitanConfig{
+			LogLevel: "info",
+		},
 		Mysql: MysqlConfig{
 			Host:        "127.0.0.1",
 			User:        "root",
 			Pass:        "",
 			Name:        "titan",
-			Port:        "3306",
+			Port:        3306,
 			AutoMigrate: true,
+		},
+		Network: NetworkConfig{
+			Port:       2096,
+			LogPackets: false,
 		},
 	}
 
