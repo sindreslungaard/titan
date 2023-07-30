@@ -19,10 +19,11 @@ type RoomEnterRequest struct {
 }
 
 type Room struct {
-	id      int
-	data    db.Room
-	tilemap *TileMap
-	users   Store[uint64, RoomUser]
+	id        int
+	data      db.Room
+	ownername string
+	tilemap   *TileMap
+	users     Store[uint64, RoomUser]
 
 	nextuserid uint64
 	nextitemid uint64
@@ -44,10 +45,11 @@ func loadroom(id int) (*Room, bool) {
 	}
 
 	r = &Room{
-		id:      data.ID,
-		data:    data,
-		tilemap: tilemap(data.FloorPlan, data.DoorX, data.DoorY),
-		users:   store[uint64, RoomUser](),
+		id:        data.ID,
+		ownername: usernamecache.get(data.Owner),
+		data:      data,
+		tilemap:   tilemap(data.FloorPlan, data.DoorX, data.DoorY),
+		users:     store[uint64, RoomUser](),
 
 		closed:   0,
 		sigclose: make(chan bool),

@@ -55,11 +55,9 @@ func (u *User) EventHandler(b protocol.Buffer) {
 		e_talk(u, b)
 	case 2730:
 		e_updatefigure(u, b)
+	case 2752:
+		e_createroom(u, b)
 	/*
-		case 2752:
-			RequestCreateRoom(c, p)
-		case 2730:
-			UserSaveLook(c, p)
 		case 1195:
 			RequestCatalogMode(c, p)
 	*/

@@ -55,6 +55,7 @@ func main() {
 		log.Fatal().Err(err).Msg("Database connection error")
 	}
 
+	hh.InitializeUsernameCache()
 	hh.StartAuthenticating()
 
 	log.Fatal().Err(network.NewServer().OnConnect(func(s *network.Socket) {

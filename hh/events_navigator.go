@@ -17,5 +17,6 @@ func e_navigatordata(u *User, b protocol.Buffer) {
 func e_navigatorsearch(u *User, b protocol.Buffer) {
 	view := b.ReadString()
 	query := b.ReadString()
-	u.write(protocol.NewNavigatorSearchResults(view, query))
+
+	navigator.query(u, view, query)
 }

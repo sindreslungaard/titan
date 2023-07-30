@@ -4,7 +4,7 @@ func NewNavigatorMetaData() []byte {
 	b := EmptyBuffer()
 	b.WriteShort(NewNavigatorMetaDataHeader)
 
-	b.WriteInt(4)
+	b.WriteInt(3)
 
 	b.WriteString("official_view")
 	b.WriteInt(0)
@@ -12,8 +12,8 @@ func NewNavigatorMetaData() []byte {
 	b.WriteString("hotel_view")
 	b.WriteInt(0)
 
-	b.WriteString("roomads_view")
-	b.WriteInt(0)
+	/* b.WriteString("roomads_view")
+	b.WriteInt(0) */
 
 	b.WriteString("myworld_view")
 	b.WriteInt(0)
@@ -83,7 +83,18 @@ func NewNavigatorCollapsedCategories() []byte {
 	return b.Compose()
 }
 
-func NewNavigatorSearchResults(view string, query string) []byte {
+type NavigatorRoom struct {
+	ID          int
+	Name        string
+	Description string
+	Owner       int
+	OwnerName   string
+	RoomType    int
+	MaxUsers    int
+	UserCount   int
+}
+
+func NewNavigatorSearchResults(view string, query string, rooms []NavigatorRoom) []byte {
 	b := EmptyBuffer()
 	b.WriteShort(NewNavigatorSearchResultsHeader)
 
@@ -95,27 +106,29 @@ func NewNavigatorSearchResults(view string, query string) []byte {
 	b.WriteInt(1) // num categories
 
 	b.WriteString("")
-	b.WriteString("All rooms")
+	b.WriteString("Rooms")
 	b.WriteInt(0)
 	b.WriteBoolean(false)
 	b.WriteInt(0)
 
-	b.WriteInt(1) // foreach category, num rooms
+	b.WriteInt(len(rooms)) // foreach category, num rooms
 
-	b.WriteInt(1)                     // room id
-	b.WriteString("Test room")        // room name
-	b.WriteInt(1)                     // owner id
-	b.WriteString("Konquer")          // owner name
-	b.WriteInt(0)                     // 0=open | 1=locked | 2=pw | 3=invis
-	b.WriteInt(0)                     // users in room
-	b.WriteInt(20)                    // max users
-	b.WriteString("Test description") // room desc
-	b.WriteInt(0)
-	b.WriteInt(0) // upvotes?
-	b.WriteInt(0)
-	b.WriteInt(1) // category, prob referring to collapsed categories index
-	b.WriteInt(0) // num tags
-	b.WriteInt(0) // bitmask, base=shift0, group=shift2, promoted=shift4, public=shift8
+	for _, r := range rooms {
+		b.WriteInt(r.ID)             // room id
+		b.WriteString(r.Name)        // room Room
+		b.WriteInt(r.Owner)          // owner id
+		b.WriteString(r.OwnerName)   // owner name
+		b.WriteInt(int(r.RoomType))  // 0=open | 1=locked | 2=pw | 3=invis
+		b.WriteInt(r.UserCount)      // users in room
+		b.WriteInt(r.MaxUsers)       // max users
+		b.WriteString(r.Description) // room desc
+		b.WriteInt(0)
+		b.WriteInt(0) // upvotes?
+		b.WriteInt(0)
+		b.WriteInt(1) // category, prob referring to collapsed categories index
+		b.WriteInt(0) // num tags
+		b.WriteInt(0) // bitmask, base=shift0, group=shift2, promoted=shift4, public=shift8
+	}
 
 	return b.Compose()
 }

@@ -74,3 +74,7 @@ func (d *Store[K, T]) find(key K) (*T, bool) {
 
 	return value, ok
 }
+
+func (d *Store[K, T]) count() int {
+	return len(d.src)
+}

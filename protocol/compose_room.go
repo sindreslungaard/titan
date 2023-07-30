@@ -125,3 +125,12 @@ func Talk(id uint64, emotion int, bubble int, message string) []byte {
 
 	return b.Compose()
 }
+
+func RoomCreated(roomId int, roomName string) []byte {
+	b := EmptyBuffer()
+	b.WriteShort(RoomCreatedHeader)
+	b.WriteInt(roomId)
+	b.WriteString(roomName)
+
+	return b.Compose()
+}
