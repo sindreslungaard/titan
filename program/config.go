@@ -10,7 +10,8 @@ import (
 var Config Configuration
 
 type TitanConfig struct {
-	LogLevel string `toml:"log_level"`
+	LogLevel          string `toml:"log_level"`
+	UsernameCacheSize int    `toml:"username_cache_size"`
 }
 
 type MysqlConfig struct {
@@ -54,7 +55,8 @@ func mkdefaultcnf() []byte {
 
 	cnf := Configuration{
 		Titan: TitanConfig{
-			LogLevel: "info",
+			LogLevel:          "info",
+			UsernameCacheSize: 300,
 		},
 		Mysql: MysqlConfig{
 			Host:        "127.0.0.1",
