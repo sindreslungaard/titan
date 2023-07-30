@@ -151,3 +151,16 @@ func UserCredits(credits int) []byte {
 
 	return b.Compose()
 }
+
+func RoomUserData(id uint64, look string, gender string, motto string, achievementscore int) []byte {
+	b := EmptyBuffer()
+	b.WriteShort(RoomUserDataHeader)
+
+	b.WriteInt(int(id))
+	b.WriteString(look)
+	b.WriteString(gender)
+	b.WriteString(motto)
+	b.WriteInt(achievementscore)
+
+	return b.Compose()
+}

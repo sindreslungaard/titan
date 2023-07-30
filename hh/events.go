@@ -53,6 +53,8 @@ func (u *User) EventHandler(b protocol.Buffer) {
 		e_walk(u, b)
 	case 1314:
 		e_talk(u, b)
+	case 2730:
+		e_updatefigure(u, b)
 	/*
 		case 2752:
 			RequestCreateRoom(c, p)

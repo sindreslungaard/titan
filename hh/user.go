@@ -1,6 +1,7 @@
 package hh
 
 import (
+	"fmt"
 	"titan/db"
 	"titan/protocol"
 )
@@ -13,6 +14,13 @@ type Session interface {
 	OnReceive(func(protocol.Buffer))
 	OnClose(func())
 }
+
+type Gender string
+
+const (
+	Male   Gender = "M"
+	Female Gender = "F"
+)
 
 type User struct {
 	id      int
@@ -97,4 +105,25 @@ func (u *User) exitroom() {
 		u.room.clear()
 		u.roomuser.clear()
 	}
+}
+
+func (u *User) updatefigure(g Gender, figure string) {
+	u.data.Gender = fmt.Sprint(g)
+	u.data.Figure = figure
+	
+	db.Conn.Save(&u.data)
+	
+	r, ok := u.room.unwrap()
+
+	if !ok {
+		return
+	}
+
+	ru, ok := u.roomuser.unwrap()
+	
+	if !ok {
+		return
+	}
+
+	r.broadcast(protocol.RoomUserData(ru.id, figure, u.data.Gender, u.data.Motto, 0))
 }

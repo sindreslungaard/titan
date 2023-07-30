@@ -1,6 +1,9 @@
 package hh
 
-import "titan/protocol"
+import (
+	"strings"
+	"titan/protocol"
+)
 
 func e_userdata(u *User, b protocol.Buffer) {
 	u.write(protocol.UserData(
@@ -19,4 +22,16 @@ func e_userdata(u *User, b protocol.Buffer) {
 
 func e_credits(u *User, b protocol.Buffer) {
 	u.write(protocol.UserCredits(u.data.Credits))
+}
+
+func e_updatefigure(u *User, b protocol.Buffer) {
+	gender := strings.ToUpper(b.ReadString())
+
+	if gender != "M" && gender != "F" {
+		gender = "M"
+	}
+
+	figure := b.ReadString()
+
+	u.updatefigure(Gender(gender), figure)
 }
