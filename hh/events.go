@@ -57,10 +57,8 @@ func (u *User) EventHandler(b protocol.Buffer) {
 		e_updatefigure(u, b)
 	case 2752:
 		e_createroom(u, b)
-	/*
-		case 1195:
-			RequestCatalogMode(c, p)
-	*/
+	case 1195:
+		e_requestcatalog(u, b)
 	default:
 		log.Debug().Int("header", header).Msg("Unknown header")
 	}
