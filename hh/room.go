@@ -206,3 +206,7 @@ func (r *Room) mv(u *RoomUser, x int, y int, z float32) {
 
 	log.Debug().Uint64("id", u.id).Int("x", x).Int("y", y).Str("user", u.username).Msg("Roomuser moved")
 }
+
+func (r *Room) chat(u *RoomUser, message string, shouting bool) {
+	r.broadcast(protocol.Talk(u.id, 0, 0, message))
+}

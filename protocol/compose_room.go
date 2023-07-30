@@ -111,3 +111,17 @@ func RoomUserRemove(id uint64) []byte {
 
 	return b.Compose()
 }
+
+func Talk(id uint64, emotion int, bubble int, message string) []byte {
+	b := EmptyBuffer()
+	b.WriteShort(RoomUserTalkHeader)
+
+	b.WriteInt(int(id))
+	b.WriteString(message)
+	b.WriteInt(emotion)
+	b.WriteInt(bubble)
+	b.WriteInt(0)
+	b.WriteInt(len([]rune(message)))
+
+	return b.Compose()
+}

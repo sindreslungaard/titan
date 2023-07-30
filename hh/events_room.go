@@ -60,3 +60,21 @@ func e_walk(u *User, b protocol.Buffer) {
 
 	ru.target(x, y)
 }
+
+func e_talk(u *User, b protocol.Buffer) {
+	message := b.ReadString()
+
+	ru, ok := u.roomuser.unwrap()
+
+	if !ok {
+		return
+	}
+
+	r, ok := u.room.unwrap()
+
+	if !ok {
+		return
+	}
+
+	r.chat(ru, message, false)
+}
