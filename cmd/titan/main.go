@@ -57,6 +57,7 @@ func main() {
 		log.Fatal().Err(err).Msg("Database connection error")
 	}
 
+	hh.LoadCatalog()
 	hh.InitializeUsernameCache()
 	hh.StartAuthenticating()
 
