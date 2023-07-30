@@ -51,6 +51,8 @@ func main() {
 		cnf.Mysql.Name,
 		cnf.Mysql.Port,
 		cnf.Mysql.AutoMigrate,
+		cnf.Mysql.MaxIdleConnections,
+		cnf.Mysql.MaxOpenConnections,
 	); err != nil {
 		log.Fatal().Err(err).Msg("Database connection error")
 	}

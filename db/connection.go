@@ -11,7 +11,7 @@ import (
 
 var Conn *gorm.DB
 
-func Connect(user string, password string, host string, dbname string, port int, automigrate bool) error {
+func Connect(user string, password string, host string, dbname string, port int, automigrate bool, maxidle int, maxopen int) error {
 	dialector := mysql.Open(fmt.Sprintf(
 		"%s:%s@tcp(%s:%v)/%s?charset=utf8mb4&parseTime=True&loc=Local",
 		user,
@@ -31,6 +31,15 @@ func Connect(user string, password string, host string, dbname string, port int,
 	if err != nil {
 		return err
 	}
+
+	sqldb, err := db.DB()
+
+	if err != nil {
+		return err
+	}
+
+	sqldb.SetMaxIdleConns(maxidle)
+	sqldb.SetMaxOpenConns(maxopen)
 
 	log.Info().Str("dbname", dbname).Str("user", user).Str("host", host).Int("port", port).Msg("Connected to database")
 

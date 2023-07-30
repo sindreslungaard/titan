@@ -15,12 +15,14 @@ type TitanConfig struct {
 }
 
 type MysqlConfig struct {
-	Host        string `toml:"db_host"`
-	User        string `toml:"db_user"`
-	Pass        string `toml:"db_pass"`
-	Name        string `toml:"db_name"`
-	Port        int    `toml:"db_port"`
-	AutoMigrate bool   `toml:"db_auto_migrate"`
+	Host               string `toml:"db_host"`
+	User               string `toml:"db_user"`
+	Pass               string `toml:"db_pass"`
+	Name               string `toml:"db_name"`
+	Port               int    `toml:"db_port"`
+	AutoMigrate        bool   `toml:"db_auto_migrate"`
+	MaxIdleConnections int    `toml:"db_max_idle_connections"`
+	MaxOpenConnections int    `toml:"db_max_open_connections"`
 }
 
 type NetworkConfig struct {
@@ -59,12 +61,14 @@ func mkdefaultcnf() []byte {
 			UsernameCacheSize: 300,
 		},
 		Mysql: MysqlConfig{
-			Host:        "127.0.0.1",
-			User:        "root",
-			Pass:        "",
-			Name:        "titan",
-			Port:        3306,
-			AutoMigrate: true,
+			Host:               "127.0.0.1",
+			User:               "root",
+			Pass:               "",
+			Name:               "titan",
+			Port:               3306,
+			AutoMigrate:        true,
+			MaxIdleConnections: 10,
+			MaxOpenConnections: 100,
 		},
 		Network: NetworkConfig{
 			Port:       2096,
