@@ -12,19 +12,64 @@ var catalog = &Catalog{}
 
 type Catalog struct {
 	sync.RWMutex
+
+	baseitems map[int]db.ItemBase
+
+	items         map[int]db.CatalogItem
+	computeditems map[int][]byte
+
 	pages         map[int]db.CatalogPage
 	computedpages map[int][]byte
 }
 
 func LoadCatalog() {
-	catalog.Lock()
-	defer catalog.Unlock()
-
 	catalog = &Catalog{
+		baseitems: make(map[int]db.ItemBase),
+
+		items:         make(map[int]db.CatalogItem),
+		computeditems: make(map[int][]byte),
+
 		pages:         make(map[int]db.CatalogPage),
 		computedpages: make(map[int][]byte),
 	}
 
+	catalog.Lock()
+	defer catalog.Unlock()
+
+	catalog.loadbaseitems()
+	catalog.loaditems()
+	catalog.loadpages()
+}
+
+func (c *Catalog) loadbaseitems() {
+	var items []db.ItemBase
+	err := db.Conn.Find(&items).Error
+
+	if err != nil {
+		log.Error().Err(err).Msg("Failed to load item bases")
+		return
+	}
+
+	for _, i := range items {
+		c.baseitems[i.ID] = i
+	}
+}
+
+func (c *Catalog) loaditems() {
+	var items []db.CatalogItem
+	err := db.Conn.Find(&items).Error
+
+	if err != nil {
+		log.Error().Err(err).Msg("Failed to load item bases")
+		return
+	}
+
+	for _, i := range items {
+		c.items[i.ID] = i
+	}
+}
+
+func (c *Catalog) loadpages() {
 	var pages []db.CatalogPage
 	err := db.Conn.Order("'order'").Find(&pages).Error
 
@@ -34,7 +79,7 @@ func LoadCatalog() {
 	}
 
 	for _, p := range pages {
-		catalog.pages[p.ID] = p
+		c.pages[p.ID] = p
 	}
 
 	log.Info().Int("pages", len(pages)).Msg("Loaded catalog")

@@ -59,6 +59,8 @@ func (u *User) EventHandler(b protocol.Buffer) {
 		e_createroom(u, b)
 	case 1195:
 		e_requestcatalog(u, b)
+	case 412:
+		e_requestcatalogpage(u, b)
 	default:
 		log.Debug().Int("header", header).Msg("Unknown header")
 	}
