@@ -46,7 +46,13 @@ func Connect(user string, password string, host string, dbname string, port int,
 	if automigrate {
 		log.Info().Msg("Migrating database models")
 
-		err = db.AutoMigrate()
+		err = db.AutoMigrate(
+			&User{},
+			&Room{},
+			&ItemBase{},
+			&CatalogPage{},
+			&CatalogItem{},
+		)
 
 		if err != nil {
 			return err
